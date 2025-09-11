@@ -1,0 +1,14 @@
+target 'iosApp' do
+  use_frameworks!
+  platform :ios, '14.1'
+  pod 'shared', :path => '../shared'
+
+  # KMP-ObservableViewModel (for SwiftUI property wrappers - compatible with SKIE)
+  pod 'KMPObservableViewModelSwiftUI', '1.0.0-BETA-12'
+  
+  # Note: KMP-NativeCoroutines pods removed since SKIE provides superior Flow/suspend integration
+  # SKIE automatically handles:
+  # - StateFlow/Flow -> Swift AsyncSequence
+  # - suspend functions -> Swift async/await
+  # - Better performance and cleaner API
+end

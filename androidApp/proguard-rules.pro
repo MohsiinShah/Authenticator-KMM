@@ -1,0 +1,3 @@
+-dontwarn co.touchlab.skie.configuration.annotations.DefaultArgumentInterop$Enabled
+-dontwarn co.touchlab.skie.configuration.annotations.FunctionInterop$FileScopeConversion$Enabled
+-dontwarn co.touchlab.skie.configuration.annotations.FunctionInterop$LegacyName$Disabled

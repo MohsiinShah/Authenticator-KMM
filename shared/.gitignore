@@ -1,0 +1,32 @@
+# Gradle
+.gradle/
+build/
+captures/
+outputs/
+*.log
+
+# IntelliJ/Android Studio
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Kotlin/Native
+*.kotlin_module
+*.klib
+*.kexe
+*.cinterop
+*.obj
+*.link
+*.bin
+*.d
+
+# macOS
+.DS_Store
+
+# Kotlin/JS
+out/
+
+# Other
+.gradle/
+local.properties

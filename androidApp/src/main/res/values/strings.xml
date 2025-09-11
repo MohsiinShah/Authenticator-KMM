@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account">Account</string>
+    <string name="back">back</string>
+    <string name="news_details">News Details</string>
+    <string name="read_later">Read later</string>
+    <string name="app_heading">KMM News</string>
+    <string name="adding_to_read_later">Addding To Read Later</string>
+    <string name="added_to_read_later">Added to read later.</string>
+    <string name="authenticator_app">Authenticator App</string>
+    <string name="splash_headline">Stronger security with two factor authentication for all services</string>
+    <string name="get_started">Get Started</string>
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
+    <string name="done">Done</string>
+    <string name="authenticator">Authenticator</string>
+    <string name="scan_qr_code">Scan QR Code</string>
+    <string name="enter_manually">Enter Manually</string>
+    <string name="account_name">Account Name</string>
+    <string name="secret_key">Secret Key</string>
+    <string name="algorithm">Algorithm</string>
+    <string name="by_time_totp">By time (TOTP)</string>
+    <string name="by_counter_hotp">By counter (HOTP)</string>
+    <string name="scan_qr">Scan QR</string>
+    <string name="new_account">New Account</string>
+    <string name="dashboard_desc">Pair your online service account with 2FAs or import your tokens</string>
+
+    <string name="error.undefined">Undefined error</string>
+    <string name="error.exists">Account with such name already exists</string>
+    <string name="error.invalidUri">Invalid creation URI</string>
+    <string name="error.undefinedType">Undefined account type</string>
+    <string name="error.shortLabel">Too short account name</string>
+    <string name="error.shortSecret">Too short secret code</string>
+    <string name="error.invalidInterval">Invalid interval value</string>
+    <string name="error.invalidCounter">Invalid counter value</string>
+    <string name="try_refreshing_in_a_few_seconds">Try refreshing in a few seconds</string>
+    <string name="account_info">Enter a label or your email to help identify this account.</string>
+    <string name="secret_info">Enter your setup key (spaces don’t matter)</string>
+    <string name="algo_info">TOTP (Time-based One-Time Password)\n</string>
+    <string name="totp_info">Codes refresh every 30 seconds by default or after your preferred interval</string>
+    <string name="hotp_info"><![CDATA[This counter will be incremented everytime you request a new code. 0 -> 1 -> 2 and so on]]></string>
+    <string name="max_interval_should_not_exceed_60_seconds">Max interval should not exceed 60 seconds</string>
+    <string name="authentication_enabled_for">Authentication enabled for %1$s</string>
+</resources>

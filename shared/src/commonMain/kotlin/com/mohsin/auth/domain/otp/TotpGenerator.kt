@@ -1,0 +1,21 @@
+package com.mohsin.auth.domain.otp
+
+import com.mohsin.auth.domain.time.Clock
+import com.mohsin.auth.domain.time.SystemClock
+import kotlin.math.floor
+
+class TotpGenerator(
+    private val clock: Clock = SystemClock
+) : HotpGenerator() {
+
+    override fun generate(secret: ByteArray, value: Long, algorithm: DigestAlgorithm, digits: Int): String {
+        return super.generate(secret, counter(value), algorithm, digits)
+    }
+
+    private fun counter(interval: Long) =
+        floor(clock.epochSeconds().toDouble() / interval).toLong()
+
+    companion object {
+        val INSTANCE = TotpGenerator()
+    }
+}
