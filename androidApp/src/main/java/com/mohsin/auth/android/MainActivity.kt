@@ -41,6 +41,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mohsin.auth.android.components.AppSnackBar
+import com.mohsin.auth.android.components.ConfirmationDialog
 import com.mohsin.auth.android.components.TopAppBar
 import com.mohsin.auth.android.core.navigation.NavigationViewModel
 import com.mohsin.auth.android.core.navigation.Screen
@@ -61,19 +62,8 @@ import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
 
-//    private val requestPermissionLauncher = registerForActivityResult(
-//        ActivityResultContracts.RequestPermission()
-//    ) { granted ->
-//        if (!granted) {
-//            Toast.makeText(this, "Camera permission denied", Toast.LENGTH_LONG).show()
-//            finish()
-//        }
-//    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//         requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         enableEdgeToEdge()
         setContent {
             MaterialTheme {
@@ -112,24 +102,11 @@ fun MainScreen() {
         }
     }
     if (showExitDialog) {
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { showExitDialog = false },
-            title = { Text("Exit App") },
-            text = { Text("Are you sure you want to exit?") },
-            confirmButton = {
-                TextButton(onClick = {
-                    showExitDialog = false
-                    (activity as MainActivity).finish()
-                }) {
-                    Text("Exit")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showExitDialog = false }) {
-                    Text("Cancel")
-                }
-            }
-        )
+        ConfirmationDialog(onAllow = {
+            (activity as MainActivity).finish()
+        }, onDismiss = {
+            showExitDialog = false
+        })
     }
 
 
@@ -274,6 +251,11 @@ fun AppContent(
                 QRScanView(modifier = modifier, onResult = {})
 
             }
+
+            /**
+             *
+             * For understanding
+             */
             entry<Screen.ZoomBook>(
                 // Entry for the ZoomBook screen, demonstrating object passing
                 metadata = mapOf("extraDataKey" to "extraDataValue"), // Optional metadata

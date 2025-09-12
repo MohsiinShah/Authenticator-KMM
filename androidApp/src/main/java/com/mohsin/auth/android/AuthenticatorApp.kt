@@ -6,13 +6,13 @@ import com.mohsin.auth.core.di.initKoin
 import com.mohsin.auth.domain.time.TotpTimer
 import org.koin.android.ext.koin.androidContext
 
-class Authenticator: Application() {
+class AuthenticatorApp: Application() {
     override fun onCreate() {
         super.onCreate()
         PlatformContext.init(this)
         TotpTimer.start()
         initKoin {
-            androidContext(this@Authenticator)
+            androidContext(this@AuthenticatorApp)
         }
     }
 }

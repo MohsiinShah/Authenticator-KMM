@@ -56,11 +56,11 @@ fun OnboardingScreen(navigateToNext: () -> Unit){
 
     val pages = listOf(
         PageData(
-            R.raw.onboarding_cloud, "Heading One", stringResource(R.string.splash_headline)
+            R.raw.onboarding_shield, "Heading One", stringResource(R.string.splash_headline)
         ), PageData(
             R.raw.onboarding_qr, "Heading Two", stringResource(R.string.splash_headline)
         ), PageData(
-            R.raw.onboarding_qr, "Heading Three", stringResource(R.string.splash_headline)
+            R.raw.onboarding_cloud, "Heading Three", stringResource(R.string.splash_headline)
         )
     )
 
