@@ -61,6 +61,7 @@ import com.mohsin.auth.android.R
 import com.mohsin.auth.android.components.ActionButton
 import com.mohsin.auth.android.components.RoundedBorderedTextField
 import com.mohsin.auth.android.components.TextContent
+import com.mohsin.auth.android.utils.validateSecretKey
 import com.mohsin.auth.feature.AddViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -431,20 +432,24 @@ fun AddAccountManually(modifier: Modifier = Modifier,
                     modifier = Modifier
                         .width(200.dp)
                         .clickable {
-                            if (checkTOTP) {
-                                addAccViewModel.createTotp(
-                                    name = accountName,
-                                    secret = secretKey,
-                                    interval = intervalTOTP.toLong()
-                                )
-                            } else {
-                                addAccViewModel.createHotp(
-                                    name = accountName,
-                                    secret = secretKey,
-                                    counter = counterHOTP.toLong()
-                                )
+                            val validateSecret = secretKey.validateSecretKey()
+                            if(validateSecret != null){
+                                showSnackbar(validateSecret)
+                            }else {
+                                if (checkTOTP) {
+                                    addAccViewModel.createTotp(
+                                        name = accountName,
+                                        secret = secretKey,
+                                        interval = intervalTOTP.toLong()
+                                    )
+                                } else {
+                                    addAccViewModel.createHotp(
+                                        name = accountName,
+                                        secret = secretKey,
+                                        counter = counterHOTP.toLong()
+                                    )
+                                }
                             }
-
                         }, text = "Create Account"
                 )
             }

@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -108,12 +110,15 @@ fun OnboardingScreen(navigateToNext: () -> Unit){
 
                     TextContent(
                         modifier = Modifier
-                            .width(200.dp)
-                            .alpha(0.4f)
                             .padding(top = 30.dp)
-                            .clickable{
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ){
                                 navigateToNext()
-                            },
+                            }
+                            .width(200.dp)
+                            .alpha(0.4f),
                         value = if (pagerState.currentPage != pages.lastIndex) stringResource(R.string.skip) else "",
                         textColor = colorResource(R.color.black_80),
                         fontSize = 20.sp,

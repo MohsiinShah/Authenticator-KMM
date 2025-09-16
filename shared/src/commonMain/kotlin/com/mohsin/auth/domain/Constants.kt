@@ -7,4 +7,6 @@ object Constants {
     const val DEFAULT_HOTP_COUNTER = 0L
     const val DEFAULT_ALGORITHM = "SHA1"
 
+    const val PRIVACY_POLICY = "https://www.google.com"
+
 }

@@ -19,3 +19,22 @@ val map = hashMapOf(
 fun CreationError.display(ctx: Context): String {
     return ctx.getString(map[this] ?: R.string.error_undefined)
 }
+
+fun String.validateSecretKey(): String? {
+    this.let { secret ->
+        // Regex for Base32 (RFC 4648) with optional "=" padding
+        val base32Regex = Regex("^[A-Z2-7]+=*\$")
+
+        // Invalid character check
+        if (secret.any { !it.isLetterOrDigit() && it != '=' }) {
+            return "Secret key contains invalid special characters"
+        }
+
+        // Check if it's a valid Base32 sequence
+        if (!base32Regex.matches(secret)) {
+            return "Secret key must only contain A–Z and digits 2–7 (with optional '=' padding)"
+        }
+
+        return null // ✅ No error, secret is valid
+    }
+}
