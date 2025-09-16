@@ -69,7 +69,7 @@ fun SplashScreen(navigateToNext : () -> Unit) {
             ActionButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 50.dp, start = 20.dp, end = 20.dp)
+                    .padding(bottom = 70.dp, start = 20.dp, end = 20.dp)
                     .clickable {
                         navigateToNext.invoke()
                     }, text = stringResource(R.string.get_started)

@@ -162,7 +162,7 @@ fun DashboardScreen(
                 modifier = Modifier
                     .padding(bottom = 40.dp, end = 20.dp)
                     .align(Alignment.BottomEnd),
-                elevation = FloatingActionButtonDefaults.elevation(5.dp),
+                elevation = FloatingActionButtonDefaults.elevation(0.dp),
                 containerColor = Color.Transparent, // removes background
                 contentColor = Color.Unspecified,   // prevents tint
                 onClick = {
@@ -492,6 +492,7 @@ private fun ActionMenuColumn(
 
     if(showDeleteConfirmation){
         DeleteConfirmationDialog(onAllow = {
+            showDeleteConfirmation = false
             onDelete()
         }, onDismiss = {
             showDeleteConfirmation = false
@@ -663,7 +664,10 @@ fun AddAccountOptionsView(
 
     val qrLauncher = rememberLauncherForActivityResult(ScanQRCode()) { result: QRResult ->
         when (result) {
-            is QRResult.QRSuccess -> onQRResult(result.content.rawValue ?: "")
+            is QRResult.QRSuccess -> {
+                onQRResult(result.content.rawValue ?: "")
+                checkPermissionsAndMove = false
+            }
             else -> {
                 checkPermissionsAndMove = false
             }

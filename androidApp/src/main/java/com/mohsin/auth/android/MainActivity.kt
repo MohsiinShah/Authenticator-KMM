@@ -260,6 +260,7 @@ fun AppContent(
             fadeIn(tween(300)) togetherWith fadeOut(tween(300))
         }, entryProvider = entryProvider { // Define your screen entries here
             entry<Screen.SplashScreen> {
+                showToolbar(false)
                 SplashScreen(navigateToNext = {
                     navigationViewModel.moveToScreen(Screen.OnboardingScreen)
                 })

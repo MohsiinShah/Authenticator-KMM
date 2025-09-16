@@ -21,20 +21,49 @@ fun CreationError.display(ctx: Context): String {
 }
 
 fun String.validateSecretKey(): String? {
-    this.let { secret ->
-        // Regex for Base32 (RFC 4648) with optional "=" padding
-        val base32Regex = Regex("^[A-Z2-7]+=*\$")
+    val secret = this.trim().replace(" ", "").uppercase() // Remove spaces
 
-        // Invalid character check
-        if (secret.any { !it.isLetterOrDigit() && it != '=' }) {
-            return "Secret key contains invalid special characters"
-        }
-
-        // Check if it's a valid Base32 sequence
-        if (!base32Regex.matches(secret)) {
-            return "Secret key must only contain A–Z and digits 2–7 (with optional '=' padding)"
-        }
-
-        return null // ✅ No error, secret is valid
+    if (secret.isEmpty()) {
+        return "Secret key cannot be empty"
     }
+
+    // Basic format check first
+    val base32Regex = Regex("^[A-Z2-7]+=*$")
+    if (!base32Regex.matches(secret)) {
+        return "Secret key must only contain A-Z, digits 2-7, and optional '=' padding"
+    }
+
+    try {
+        decodeBase32(secret)
+        val secretWithoutPadding = secret.trimEnd('=')
+
+        if (secretWithoutPadding.length < 16) {
+            return "Secret key too short. Minimum 16 characters required"
+        }
+
+        return null // ✅ Valid and decodeable
+    } catch (e: Exception) {
+        return "Invalid Base32 encoding: ${e.message}"
+    }
+}
+
+// Simple Base32 decoder for validation
+private fun decodeBase32(input: String): ByteArray {
+    val alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
+    val cleanInput = input.trimEnd('=')
+
+    if (cleanInput.any { it !in alphabet }) {
+        throw IllegalArgumentException("Invalid Base32 character")
+    }
+
+    val bits = cleanInput.map { alphabet.indexOf(it).toString(2).padStart(5, '0') }.joinToString("")
+    val bytes = mutableListOf<Byte>()
+
+    for (i in bits.indices step 8) {
+        if (i + 8 <= bits.length) {
+            bytes.add(bits.substring(i, i + 8).toInt(2).toByte())
+        }
+    }
+
+    return bytes.toByteArray()
 }
