@@ -373,7 +373,7 @@ fun AppDrawer(
                 value = stringResource(R.string.authenticator_app),
                 textColor = colorResource(R.color.black),
                 fontSize = 15.sp,
-                fontFamily = FontFamily(Font(R.font.readex_pro_regular))
+                fontFamily = FontFamily(Font(R.font.readex_pro_semi_bold))
             )
 
             Spacer(modifier = Modifier.height(24.dp))
