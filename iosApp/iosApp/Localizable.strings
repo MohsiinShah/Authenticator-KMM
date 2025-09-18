@@ -1,0 +1,14 @@
+//
+//  Localizable.strings
+//  iosApp
+//
+//  Created by Mohsin on 18/09/2025.
+//  Copyright © 2025 orgName. All rights reserved.
+//
+
+"app_name" = "Authenticator App";
+"splash_tagline" = "Stronger security with two-authentication for all services";
+"get_started" = "Get Started";
+"dashboard_tagline" = "Pair your online service account with 2FAS or import your tokens";
+"scan_qr" = "Scan QR Code";
+"enter_manually" = "Enter Manually";

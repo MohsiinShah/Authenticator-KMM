@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "Let’s add your 2FA Code.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
