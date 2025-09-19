@@ -41,11 +41,11 @@
 	</array>
 	<key>UIAppFonts</key>
 	<array>
-		<string>readex_pro_semi_bold.ttf</string>
-		<string>readex_pro_regular.ttf</string>
-		<string>readex_pro_medium.ttf</string>
 		<string>readex_pro_light.ttf</string>
-		<string>readex_pro_bold.ttf</string>
+		<string>readex_pro_medium.ttf</string>
+		<string>ReadexPro-bold.ttf</string>
+		<string>ReadexPro-Regular.ttf</string>
+		<string>ReadexPro-SemiBold.ttf</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>

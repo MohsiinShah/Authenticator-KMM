@@ -12,8 +12,6 @@ import UIKit
 enum Destination: Hashable {
     case SplashScreen
     case DashboardScreen
-//    case gallery(processor: PROCESSOR)
-//    case processing(processor: PROCESSOR)
-//    case filters(path: String, processor: PROCESSOR)
-//    case result(path: String, processor: PROCESSOR)
+    case AccountOptionsScreen
+    case AddAccountManuallyScreen
 }

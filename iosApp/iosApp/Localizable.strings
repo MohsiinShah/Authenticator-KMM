@@ -12,3 +12,31 @@
 "dashboard_tagline" = "Pair your online service account with 2FAS or import your tokens";
 "scan_qr" = "Scan QR Code";
 "enter_manually" = "Enter Manually";
+"authorization_enabled" = "Authorization has been enabled for";
+"error_account_exists" = "Account with such name already exists";
+"error_short_label" = "Too short account name";
+"error_short_secret" = "Too short secret code";
+"error_invalid_uri" = "Invalid creation URI";
+"error_undefined_type" = "Undefined account type";
+"error_unsupported_algorithm" = "Unsupported algorithm";
+"error_invalid_interval" = "Invalid interval value";
+"error_interval_limit" = "Interval can't exceed 60 seconds";
+"error_invalid_counter" = "Invalid counter value";
+"error_generic" = "Undefined error";
+"qr_scan_title" = "Align the QR within the box to scan";
+"add_account" = "Add Account";
+"account_name" = "Account Name";
+"secret_key" = "Secret Key";
+"algorithm" = "Algorithm";
+"by_time_totp" = "By time (TOTP)";
+"by_counter_hotp" = "By counter (HOTP)";
+"refresh_interval" = "Refresh Interval";
+"initial_counter" = "Initial Counter";
+"create_account" = "Create Account";
+
+// Info tooltips
+"account_info" = "A unique name to identify your account";
+"secret_info" = "The secret key provided by the service when setting up 2FA";
+"algo_info" = "TOTP (Time-based One-Time Password) generates codes based on time. ";
+"totp_info" = "Time interval in seconds for generating new codes (default: 30)";
+"hotp_info" = "Starting counter value for HOTP accounts (default: 0)";

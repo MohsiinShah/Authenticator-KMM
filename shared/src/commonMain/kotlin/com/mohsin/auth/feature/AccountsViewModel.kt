@@ -2,6 +2,7 @@ package com.mohsin.auth.feature
 
 import com.mohsin.auth.domain.account.Account
 import com.mohsin.auth.domain.account.AccountRepository
+import co.touchlab.skie.configuration.annotations.FlowInterop
 import com.rickclephas.kmp.observableviewmodel.ViewModel
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.CoroutineDispatcher
@@ -15,9 +16,11 @@ class AccountsViewModel(
     private val repository: AccountRepository,
 ) : ViewModel(), KoinComponent {
 
+    @FlowInterop.Enabled
     val accounts: StateFlow<List<Account>> = repository.accounts
 
     private val _updateResult = MutableSharedFlow<Account>()
+    @FlowInterop.Enabled
     val updateResult: SharedFlow<Account> = _updateResult
 
     suspend fun observeAccounts(callback: (List<Account>) -> Unit) {
