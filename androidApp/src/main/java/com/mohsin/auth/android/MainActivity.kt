@@ -270,6 +270,7 @@ fun AppContent(
                     navigationViewModel.moveToScreen(Screen.DashboardScreen)
                 })
             }
+
             entry<Screen.DashboardScreen> {
                 DashboardScreen(modifier,
                     showSnackbar = { message ->
