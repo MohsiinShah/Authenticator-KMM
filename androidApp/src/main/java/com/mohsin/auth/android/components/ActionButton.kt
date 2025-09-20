@@ -1,5 +1,6 @@
 package com.mohsin.auth.android.components
 
+import androidx.annotation.ColorRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -10,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -25,8 +27,9 @@ import com.mohsin.auth.android.R
 @Composable
 fun ActionButton(
     modifier: Modifier = Modifier,
-    height: Dp = 52.dp,
+    height: Dp = 47.dp,
     textSize: TextUnit = 17.sp,
+    @ColorRes colorRes: Color = colorResource(R.color.primary_blue),
     fontFamily: FontFamily = FontFamily(
         Font(R.font.readex_pro_medium)
     ),
@@ -37,7 +40,7 @@ fun ActionButton(
         modifier = modifier
             .height(height)
             .clip(RoundedCornerShape(10.dp))
-            .background(color = colorResource(R.color.primary_blue))
+            .background(color = colorRes)
     ) {
         TextContent(
             modifier = Modifier
@@ -56,7 +59,7 @@ fun ActionButton(
 @Composable
 fun ActionButtonBordered(
     modifier: Modifier = Modifier,
-    height: Dp = 52.dp,
+    height: Dp = 47.dp,
     textSize: TextUnit = 17.sp,
     fontFamily: FontFamily = FontFamily(
         Font(R.font.readex_pro_medium)

@@ -19,14 +19,20 @@ class AddViewModel(
     private val manager: AccountManager
 ) : ViewModel(), KoinComponent {
 
-    // One-time success event
+    // One-time success event (internal)
     private val _success = MutableSharedFlow<Account>()
 
     @FlowInterop.Enabled
     val success: SharedFlow<Account> = _success
 
+    // Lightweight success message for iOS interop to avoid passing complex objects
+    private val _successMessage = MutableSharedFlow<String>()
+
+    @FlowInterop.Enabled
+    val successMessage: SharedFlow<String> = _successMessage
     // One-time error event
     private val _error = MutableSharedFlow<CreationError>()
+    @FlowInterop.Enabled
     val error: SharedFlow<CreationError> = _error
 
     @FunctionInterop.LegacyName.Disabled
@@ -35,6 +41,7 @@ class AddViewModel(
             try {
                 val created = manager.createByUri(uri)
                 _success.emit(created)
+                _successMessage.emit(created.name)
             } catch (ex: AccountCreationException) {
                 _error.emit(ex.kind)
             } catch (th: Throwable) {
@@ -56,6 +63,7 @@ class AddViewModel(
                     interval
                 )
                 _success.emit(account)
+                _successMessage.emit(account.name)
             } catch (ex: AccountCreationException) {
                 _error.emit(ex.kind)
             } catch (th: Throwable) {
@@ -77,6 +85,7 @@ class AddViewModel(
                     counter
                 )
                 _success.emit(account)
+                _successMessage.emit(account.name)
             } catch (ex: AccountCreationException) {
                 _error.emit(ex.kind)
             } catch (th: Throwable) {

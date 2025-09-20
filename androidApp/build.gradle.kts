@@ -1,3 +1,6 @@
+import java.text.SimpleDateFormat
+import java.util.Date
+
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -14,6 +17,11 @@ android {
         versionCode = 1
         versionName = "1.0"
         targetSdk = 35
+
+        val date = Date()
+        val formattedDate = SimpleDateFormat("dd-MMM-yyyy").format(date)
+        setProperty("archivesBaseName", "AmexAuth-v-${versionName}-"+formattedDate)
+        buildConfigField("String","APP_VERSION_NAME","\"${versionName}\"")
     }
     buildTypes {
         getByName("release") {
@@ -31,6 +39,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

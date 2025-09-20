@@ -1,5 +1,8 @@
 package com.mohsin.auth.android
 
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -10,10 +13,30 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -23,15 +46,26 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
@@ -41,6 +75,8 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mohsin.auth.android.components.AppSnackBar
+import com.mohsin.auth.android.components.ConfirmationDialog
+import com.mohsin.auth.android.components.TextContent
 import com.mohsin.auth.android.components.TopAppBar
 import com.mohsin.auth.android.core.navigation.NavigationViewModel
 import com.mohsin.auth.android.core.navigation.Screen
@@ -52,6 +88,7 @@ import com.mohsin.auth.android.screens.onboarding.OnboardingScreen
 import com.mohsin.auth.android.screens.splash.SplashScreen
 import com.mohsin.auth.android.utils.AccountOption
 import com.mohsin.auth.android.utils.display
+import com.mohsin.auth.domain.Constants
 import com.mohsin.auth.domain.time.TotpTimer
 import com.mohsin.auth.feature.AccountsViewModel
 import com.mohsin.auth.feature.AddViewModel
@@ -61,19 +98,8 @@ import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
 
-//    private val requestPermissionLauncher = registerForActivityResult(
-//        ActivityResultContracts.RequestPermission()
-//    ) { granted ->
-//        if (!granted) {
-//            Toast.makeText(this, "Camera permission denied", Toast.LENGTH_LONG).show()
-//            finish()
-//        }
-//    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//         requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         enableEdgeToEdge()
         setContent {
             MaterialTheme {
@@ -91,6 +117,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen() {
 
+    val context = LocalContext.current
     val snackBarHostState = remember { SnackbarHostState() }
     var isSnackBarVisible by remember { mutableStateOf(false) }
 
@@ -106,33 +133,22 @@ fun MainScreen() {
 
     val activity = LocalActivity.current
 
+    val isDrawerGestureEnabled by remember(currentScreen) {
+        derivedStateOf { currentScreen == Screen.DashboardScreen }
+    }
+
     if (currentScreen == Screen.DashboardScreen) {
         BackHandler(enabled = currentScreen == Screen.DashboardScreen) {
             showExitDialog = true
         }
     }
     if (showExitDialog) {
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { showExitDialog = false },
-            title = { Text("Exit App") },
-            text = { Text("Are you sure you want to exit?") },
-            confirmButton = {
-                TextButton(onClick = {
-                    showExitDialog = false
-                    (activity as MainActivity).finish()
-                }) {
-                    Text("Exit")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showExitDialog = false }) {
-                    Text("Cancel")
-                }
-            }
-        )
+        ConfirmationDialog(onAllow = {
+            (activity as MainActivity).finish()
+        }, onDismiss = {
+            showExitDialog = false
+        })
     }
-
-
         when (currentScreen) {
         Screen.SplashScreen -> {
             systemUiController.setStatusBarColor(
@@ -155,25 +171,47 @@ fun MainScreen() {
         else -> {}
     }
 
-    Scaffold(modifier = Modifier.fillMaxSize(), snackbarHost = {
-        SnackbarHost(hostState = snackBarHostState) { snackBarData ->
-            AppSnackBar(snackBarData = snackBarData)
+    ModalNavigationDrawer(
+        modifier = Modifier,
+        drawerState = drawerState,
+        gesturesEnabled = isDrawerGestureEnabled,
+        drawerContent = {
+            AppDrawer(
+                context = context,
+                drawerState = drawerState,
+                snackBarHostState = snackBarHostState,
+                dispatchFirebaseEvent = { eventName ->
+                },
+                onExitClick = {
+                    showExitDialog = true
+                }
+            )
         }
-    }, topBar = {
-        if (topBarState.value) {
-            TopAppBar(currentScreen = currentScreen, drawerState = drawerState, actions = {}, pop = {
-                navigationViewModel.pop()
-            })
-        }
-    }) { inset ->
-        AppContent(
-            navigationViewModel = navigationViewModel,
-            modifier = Modifier.padding(inset),
-            snackBarHostState,
-            showToolbar = {
-                topBarState.value = it
+    ) {
+        Scaffold(modifier = Modifier.fillMaxSize(), snackbarHost = {
+            SnackbarHost(hostState = snackBarHostState) { snackBarData ->
+                AppSnackBar(snackBarData = snackBarData)
             }
-        )
+        }, topBar = {
+            if (topBarState.value) {
+                TopAppBar(
+                    currentScreen = currentScreen,
+                    drawerState = drawerState,
+                    actions = {},
+                    pop = {
+                        navigationViewModel.pop()
+                    })
+            }
+        }) { inset ->
+            AppContent(
+                navigationViewModel = navigationViewModel,
+                modifier = Modifier.padding(inset),
+                snackBarHostState,
+                showToolbar = {
+                    topBarState.value = it
+                }
+            )
+        }
     }
 }
 
@@ -222,6 +260,7 @@ fun AppContent(
             fadeIn(tween(300)) togetherWith fadeOut(tween(300))
         }, entryProvider = entryProvider { // Define your screen entries here
             entry<Screen.SplashScreen> {
+                showToolbar(false)
                 SplashScreen(navigateToNext = {
                     navigationViewModel.moveToScreen(Screen.OnboardingScreen)
                 })
@@ -231,6 +270,7 @@ fun AppContent(
                     navigationViewModel.moveToScreen(Screen.DashboardScreen)
                 })
             }
+
             entry<Screen.DashboardScreen> {
                 DashboardScreen(modifier,
                     showSnackbar = { message ->
@@ -274,6 +314,11 @@ fun AppContent(
                 QRScanView(modifier = modifier, onResult = {})
 
             }
+
+            /**
+             *
+             * For understanding
+             */
             entry<Screen.ZoomBook>(
                 // Entry for the ZoomBook screen, demonstrating object passing
                 metadata = mapOf("extraDataKey" to "extraDataValue"), // Optional metadata
@@ -283,4 +328,139 @@ fun AppContent(
                  )*/
             }
         })
+}
+
+@Composable
+fun AppDrawer(
+    drawerState: DrawerState,
+    snackBarHostState: SnackbarHostState,
+    context: Context,
+    dispatchFirebaseEvent: (String) -> Unit,
+    onExitClick: () -> Unit
+) {
+    val coroutineScope = rememberCoroutineScope()
+    val noSupportedAppMsg = stringResource(R.string.no_supported_app_msg)
+
+    ModalDrawerSheet(
+        windowInsets = WindowInsets.navigationBars,
+        modifier = Modifier
+            .fillMaxWidth(0.8f)
+            .fillMaxHeight()
+            .verticalScroll(rememberScrollState()),
+        drawerContainerColor = colorResource(R.color.white)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 24.dp)
+                .background(color = colorResource(R.color.white))
+        ) {
+            Spacer(modifier = Modifier.height(40.dp))
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(150.dp)
+            ) {
+                Icon(
+                    modifier = Modifier.fillMaxSize(0.8f),
+                    painter = painterResource(R.drawable.ic_splash),
+                    tint = androidx.compose.ui.graphics.Color.Unspecified,
+                    contentDescription = null
+                )
+            }
+
+            TextContent(
+                value = stringResource(R.string.authenticator_app),
+                textColor = colorResource(R.color.black),
+                fontSize = 15.sp,
+                fontFamily = FontFamily(Font(R.font.readex_pro_semi_bold))
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            HorizontalDivider(color = colorResource(R.color.border_grey),
+                modifier = Modifier.fillMaxSize(0.8f))
+        }
+
+
+        listOf(
+            R.drawable.ic_privacy_policy to R.string.privacy_policy,
+            R.drawable.ic_exit_drawer to R.string.exit
+        ).forEachIndexed { _, (iconId, labelRes) ->
+            DrawerItem(
+                iconId = iconId,
+                label = stringResource(labelRes),
+                onClick = {
+                    coroutineScope.launch { drawerState.close() }
+                    when (labelRes) {
+                        R.string.privacy_policy -> {
+                            //logging firebase event
+                            //generating intent
+                            val urlIntent = Intent(Intent.ACTION_VIEW).apply {
+                                data = Constants.PRIVACY_POLICY.toUri()
+                            }
+
+                            try {
+                                context.startActivity(urlIntent)
+                            } catch (e: ActivityNotFoundException) {
+                                coroutineScope.launch {
+                                    snackBarHostState.currentSnackbarData?.dismiss()
+                                    snackBarHostState.showSnackbar(message = noSupportedAppMsg)
+                                }
+                            }
+                        }
+                    }
+                },
+                onExitClick = {
+                    coroutineScope.launch { drawerState.close() }
+                    onExitClick.invoke()
+                }
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        TextContent(
+            modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
+            value = "v-${BuildConfig.APP_VERSION_NAME}",
+            textColor = colorResource(R.color.black),
+            fontSize = 14.sp,
+            textAlign = TextAlign.Center,
+            fontFamily = FontFamily(Font(R.font.readex_pro_regular))
+        )
+    }
+}
+
+@Composable
+fun DrawerItem(
+    iconId: Int,
+    label: String,
+    onClick: () -> Unit,
+    onExitClick: () -> Unit
+) {
+    NavigationDrawerItem(
+        modifier = Modifier,
+        icon = {
+            Icon(
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(8.dp),
+                painter = painterResource(iconId),
+                contentDescription = label
+            )
+        },
+        label = {
+
+            TextContent(
+                value = label,
+                textColor = colorResource(R.color.black),
+                fontSize = 14.sp,
+                fontFamily = FontFamily(Font(R.font.readex_pro_regular))
+            )
+        },
+        selected = false,
+        onClick = if(label == stringResource(R.string.exit)) onExitClick else onClick
+    )
 }

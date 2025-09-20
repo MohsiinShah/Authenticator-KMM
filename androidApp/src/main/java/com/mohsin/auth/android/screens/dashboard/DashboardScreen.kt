@@ -77,9 +77,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.mohsin.auth.android.R
 import com.mohsin.auth.android.components.ActionButton
 import com.mohsin.auth.android.components.ActionButtonBordered
+import com.mohsin.auth.android.components.DeleteConfirmationDialog
+import com.mohsin.auth.android.components.PermissionDialog
 import com.mohsin.auth.android.components.TextContent
 import com.mohsin.auth.domain.account.Account
 import com.mohsin.auth.domain.account.HotpAccount
@@ -155,7 +162,7 @@ fun DashboardScreen(
                 modifier = Modifier
                     .padding(bottom = 40.dp, end = 20.dp)
                     .align(Alignment.BottomEnd),
-                elevation = FloatingActionButtonDefaults.elevation(5.dp),
+                elevation = FloatingActionButtonDefaults.elevation(0.dp),
                 containerColor = Color.Transparent, // removes background
                 contentColor = Color.Unspecified,   // prevents tint
                 onClick = {
@@ -283,7 +290,7 @@ fun AccountView(
                 shape = RoundedCornerShape(corner = CornerSize(14.dp))
             )
             .clip(RoundedCornerShape(corner = CornerSize(14.dp)))
-            .clickable{
+            .clickable {
                 clipboardManager.setText(AnnotatedString(text = account.password))
             }
     ) {
@@ -481,6 +488,16 @@ private fun ActionMenuColumn(
     onDelete: () -> Unit = {},
 ) {
     var expanded by remember { mutableStateOf(false) }
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+
+    if(showDeleteConfirmation){
+        DeleteConfirmationDialog(onAllow = {
+            showDeleteConfirmation = false
+            onDelete()
+        }, onDismiss = {
+            showDeleteConfirmation = false
+        })
+    }
 
     Box {
         IconButton(onClick = { expanded = true }) {
@@ -539,7 +556,7 @@ private fun ActionMenuColumn(
 
                 },
                 onClick = {
-                    onDelete()
+                    showDeleteConfirmation = true
                     expanded = false
                 }
             )
@@ -647,12 +664,20 @@ fun AddAccountOptionsView(
 
     val qrLauncher = rememberLauncherForActivityResult(ScanQRCode()) { result: QRResult ->
         when (result) {
-            is QRResult.QRSuccess -> onQRResult(result.content.rawValue ?: "")
+            is QRResult.QRSuccess -> {
+                onQRResult(result.content.rawValue ?: "")
+                checkPermissionsAndMove = false
+            }
             else -> {
                 checkPermissionsAndMove = false
             }
         }
     }
+
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.dashboard))
+    val progress by animateLottieCompositionAsState(
+        composition = composition, iterations = LottieConstants.IterateForever
+    )
 
     Column(
         modifier = modifier
@@ -665,14 +690,16 @@ fun AddAccountOptionsView(
 
         if (checkPermissionsAndMove) {
             CameraPermissionHandler(
-                onGranted = { qrLauncher.launch(null) }
+                onGranted = { qrLauncher.launch(null) },
+                resetState = {checkPermissionsAndMove = false}
             )
         }
 
-        Image(
-            painter = painterResource(R.drawable.ic_no_account),
-            contentDescription = null
-        )
+        LottieAnimation(
+            composition = composition, progress = { progress },
+            modifier = Modifier
+                .width(145.dp)
+                .height(130.dp))
 
         Image(
             painter = painterResource(R.drawable.ic_first_2fa),
@@ -719,6 +746,7 @@ fun CameraPermissionHandler(
     onGranted: () -> Unit,
     onDenied: () -> Unit = {},
     onPermanentDenied: () -> Unit = {},
+    resetState : () -> Unit = {}
 ) {
     val context = LocalContext.current
     val activity = context as? Activity
@@ -749,46 +777,33 @@ fun CameraPermissionHandler(
     }
 
     if (showRationaleDialog) {
-        AlertDialog(
-            onDismissRequest = { showRationaleDialog = false },
-            title = { Text("Permission Needed") },
-            text = { Text("We need the camera to scan QR codes. Please grant permission.") },
-            confirmButton = {
-                TextButton(onClick = {
-                    showRationaleDialog = false
-                    permissionLauncher.launch(Manifest.permission.CAMERA)
-                }) {
-                    Text("Allow")
-                }
+        PermissionDialog(
+            onAllow = {
+                showRationaleDialog = false
+                permissionLauncher.launch(Manifest.permission.CAMERA)
             },
-            dismissButton = {
-                TextButton(onClick = { showRationaleDialog = false }) {
-                    Text("Cancel")
-                }
+            onDismiss = {
+                showRationaleDialog = false
+                resetState()
             }
         )
     }
 
     if (showSettingsDialog) {
-        AlertDialog(
-            onDismissRequest = { showSettingsDialog = false },
-            title = { Text("Permission Required") },
-            text = { Text("Camera permission is permanently denied. Please enable it in settings.") },
-            confirmButton = {
-                TextButton(onClick = {
-                    showSettingsDialog = false
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                        data = Uri.fromParts("package", context.packageName, null)
-                    }
-                    activity?.startActivity(intent)
-                }) {
-                    Text("Go to Settings")
+        PermissionDialog(
+            positiveButtonText = stringResource(R.string.go_to_settings),
+            description = stringResource(R.string.camera_permission_denied_permanently),
+            onAllow = {
+                showSettingsDialog = false
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", context.packageName, null)
                 }
+                activity?.startActivity(intent)
+                resetState()
             },
-            dismissButton = {
-                TextButton(onClick = { showSettingsDialog = false }) {
-                    Text("Cancel")
-                }
+            onDismiss = {
+                showSettingsDialog = false
+                resetState()
             }
         )
     }

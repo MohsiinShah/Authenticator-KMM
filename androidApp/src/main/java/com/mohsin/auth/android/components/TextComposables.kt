@@ -2,7 +2,9 @@ package com.mohsin.auth.android.components
 
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
@@ -99,7 +101,8 @@ fun RoundedBorderedTextField(
             color = colorResource(R.color.black),
             fontFamily = FontFamily(Font(R.font.readex_pro_light))
         ),
-        singleLine = true,
+        singleLine = false,
+        maxLines = 4,
         shape = RoundedCornerShape(12.dp),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         visualTransformation = if (isPassword && !passwordVisible) {
